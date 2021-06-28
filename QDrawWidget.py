@@ -2,18 +2,19 @@
 import sys
 from PyQt5 import QtWidgets
 from PyQt5.QtWidgets import QApplication, QMainWindow
-from PyQt5 import  QtCore
+from PyQt5 import QtCore
 from PyQt5 import QtGui
 from PyQt5.QtGui import QColor, QPainter, QPen
 
 class QDrawWidget(QtWidgets.QWidget):
-    
+    draw = QtCore.pyqtSignal()
     def __init__(self, width=500, height=500):
         super().__init__()
         self.resize(width, height)
         self.setFocusPolicy(QtCore.Qt.StrongFocus)
         self.drawing = False
         self.grid = True
+
         self.points = []
         self.setMouseTracking(True) # only get events when button is pressed
         self.initUI()
@@ -39,7 +40,7 @@ class QDrawWidget(QtWidgets.QWidget):
         if ev.button() == QtCore.Qt.LeftButton:
             self.drawing = False
             self.update()
-            print(self.points)
+            self.draw.emit()
 
     def mouseMoveEvent(self, ev):
         if self.drawing:

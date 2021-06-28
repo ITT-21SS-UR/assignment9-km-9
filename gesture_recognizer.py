@@ -2,8 +2,9 @@ import sys
 from PyQt5.QtWidgets import QApplication, QMainWindow
 from pyqtgraph.Qt import QtCore, QtGui, QtWidgets
 from PyQt5.QtGui import QColor, QPainter, QPen
-
+import math
 from QDrawWidget import QDrawWidget
+
 
 class ControlWindow(QtWidgets.QWidget):
     def __init__(self):
@@ -75,6 +76,10 @@ class ControlWindow(QtWidgets.QWidget):
             print("recognition active!")
 
 
+
+
+
+
 class MainWindow(QMainWindow):
     def __init__(self):
         super(MainWindow, self).__init__()
@@ -84,14 +89,63 @@ class MainWindow(QMainWindow):
 
     def initUI(self):
         self.drawing_area = QDrawWidget()
+        self.drawing_area.draw.connect(self.dollar_one)
         self.ctrl_window = ControlWindow()
         layout = QtGui.QGridLayout()
         layout.addWidget(self.drawing_area, 1, 0)
-        layout.addWidget( self.ctrl_window, 0, 0)
+        layout.addWidget(self.ctrl_window, 0, 0)
         cw = QtGui.QWidget()
         cw.setLayout(layout)
         self.setCentralWidget(cw)
 
+    @QtCore.pyqtSlot()
+    def dollar_one(self):
+        points = self.drawing_area.points
+        new_points = self.scale(self.rotate(self.resample_points(points)))
+
+    def resample_points(self, points):
+        print(points)
+        n = 32
+        stroke_length = 0
+        i = 1
+        new_points = []
+
+        # calculate length of stroke
+        while i < len(points):
+            # a²+b² = c²
+            distance = math.sqrt((points[i][0] - points[i - 1][0]) ** 2 + (points[i][1] - points[i - 1][1]) ** 2)
+            stroke_length += distance
+            i += 1
+
+        l = stroke_length / (n - 1)
+        print(l)
+        distance_sum = 0
+        i = 1
+
+        # resample points to n evenly spaced points
+        while i < len(points):
+            distance = math.sqrt((points[i][0] - points[i - 1][0]) ** 2 + (points[i][1] - points[i - 1][1]) ** 2)
+            distance_sum += distance
+            if distance_sum >= l:
+                x = points[i - 1][0] + ((l - distance_sum) / distance) * (points[i - 1][0] - points[i - 1][0])
+                y = points[i - 1][1] + ((l - distance_sum) / distance) * (points[i - 1][1] - points[i - 1][1])
+                point = (x, y)
+                new_points.append(point)
+                points[i] = point
+                distance_sum = 0
+            i += 1
+        print(new_points)
+        return new_points
+
+    def rotate(self,points):
+        #insert step 2
+        new_points = []
+        return new_points
+
+    def scale(self,points):
+        # insert step 3
+        new_points = []
+        return new_points
 
 def main():
     app = QApplication(sys.argv)
