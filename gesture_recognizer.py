@@ -109,33 +109,35 @@ class MainWindow(QMainWindow):
         stroke_length = 0
         i = 1
         new_points = []
-
+        if len(points) < 32:
+            print("not enough points")
         # calculate length of stroke
-        while i < len(points):
-            # a²+b² = c²
-            distance = math.sqrt((points[i][0] - points[i - 1][0]) ** 2 + (points[i][1] - points[i - 1][1]) ** 2)
-            stroke_length += distance
-            i += 1
+        else:
+            while i < len(points):
+                # a²+b² = c²
+                distance = math.sqrt((points[i][0] - points[i - 1][0]) ** 2 + (points[i][1] - points[i - 1][1]) ** 2)
+                stroke_length += distance
+                i += 1
 
-        l = stroke_length / (n - 1)
-        print(l)
-        distance_sum = 0
-        i = 1
+            l = stroke_length / (n - 1)
+            print(l)
+            distance_sum = 0
+            i = 1
 
-        # resample points to n evenly spaced points
-        while i < len(points):
-            distance = math.sqrt((points[i][0] - points[i - 1][0]) ** 2 + (points[i][1] - points[i - 1][1]) ** 2)
-            distance_sum += distance
-            if distance_sum >= l:
-                x = points[i - 1][0] + ((l - distance_sum) / distance) * (points[i - 1][0] - points[i - 1][0])
-                y = points[i - 1][1] + ((l - distance_sum) / distance) * (points[i - 1][1] - points[i - 1][1])
-                point = (x, y)
-                new_points.append(point)
-                points[i] = point
-                distance_sum = 0
-            i += 1
-        print(new_points)
-        return new_points
+            # resample points to n evenly spaced points
+            while i < len(points):
+                distance = math.sqrt((points[i][0] - points[i - 1][0]) ** 2 + (points[i][1] - points[i - 1][1]) ** 2)
+                distance_sum += distance
+                if distance_sum >= l:
+                    x = points[i - 1][0] + ((l - distance_sum) / distance) * (points[i - 1][0] - points[i - 1][0])
+                    y = points[i - 1][1] + ((l - distance_sum) / distance) * (points[i - 1][1] - points[i - 1][1])
+                    point = (x, y)
+                    new_points.append(point)
+                    points[i] = point
+                    distance_sum = 0
+                i += 1
+            print(new_points)
+            return new_points
 
     def rotate(self,points):
         #insert step 2
