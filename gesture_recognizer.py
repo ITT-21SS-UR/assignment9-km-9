@@ -18,30 +18,47 @@ class ControlWindow(QtWidgets.QWidget):
         self.label1.move(175,0)
 
 
-        record_button = QtWidgets.QPushButton(self)
-        record_button.setText("Record")
-        record_button.setMinimumSize(150,50)
-        record_button.setStyleSheet("background-color :  blue")
-        record_button.move(200, 100)
-        record_button.clicked.connect(self.record_button_clicked)
+        self.record_button = QtWidgets.QPushButton(self)
+        self.record_button.setText("Record")
+        self.record_button.setMinimumSize(150,50)
+        self.record_button.setStyleSheet("background-color :  blue")
+        self.record_button.move(200, 100)
+        self.record_button.clicked.connect(self.record_button_clicked)
 
-        recognize_button = QtWidgets.QPushButton(self)
-        recognize_button.setText("Recognize")
-        recognize_button.setMinimumSize(150,50)
-        recognize_button.setStyleSheet("background-color : yellow")
-        recognize_button.move(400, 100)
-        recognize_button.clicked.connect(self.recognize_button_clicked)
+        self.recognize_button = QtWidgets.QPushButton(self)
+        self.recognize_button.setText("Recognize")
+        self.recognize_button.setMinimumSize(150,50)
+        self.recognize_button.setStyleSheet("background-color : yellow")
+        self.recognize_button.move(400, 100)
+        self.recognize_button.clicked.connect(self.recognize_button_clicked)
 
-        gesture_name_line = QtWidgets.QLineEdit(self)
-        gesture_name_line.setText("")
-        gesture_name_line.setMinimumSize(400,20)
-        gesture_name_line.move(200,200)
+        self.gesture_name_line = QtWidgets.QLineEdit(self)
+        self.gesture_name_line.setText("")
+        self.gesture_name_line.setMinimumSize(400,20)
+        self.gesture_name_line.move(200,200)
+        
+        
+        self.gesture_add_button = QtWidgets.QPushButton(self)
+        self.gesture_add_button.setText("add")
+        self.gesture_add_button.setMinimumSize(50,20)
+        self.gesture_add_button.move(610,200)
+        self.gesture_add_button.clicked.connect(self.add_gesture_to_box)
 
-        gesture_save_button = QtWidgets.QPushButton(self)
-        gesture_save_button.setText("save")
-        gesture_save_button.setMinimumSize(50,20)
-        gesture_save_button.move(610,200)
+        self.label3 = QtWidgets.QLabel(self)
+        self.label3.setText("Add to existing gesture type: ")
+        self.label3.setMinimumSize(250,20)
+        self.label3.move(200,240)
 
+        self.gesture_box = QtWidgets.QComboBox(self)
+        self.gesture_box.setMinimumSize(150,20)
+        self.gesture_box.move(400,240)
+        
+    def add_gesture_to_box(self):
+        my_gestures = []
+        my_gestures.append(self.gesture_name_line.text())
+        self.gesture_box.addItems(my_gestures)
+        self.gesture_name_line.setText("")
+        
     def record_button_clicked(self):
             print("record active!")
 
