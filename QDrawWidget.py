@@ -38,7 +38,8 @@ class QDrawWidget(QtWidgets.QWidget):
     def mouseReleaseEvent(self, ev):
         if ev.button() == QtCore.Qt.LeftButton:
             self.drawing = False
-            self.update() 
+            self.update()
+            print(self.points)
 
     def mouseMoveEvent(self, ev):
         if self.drawing:

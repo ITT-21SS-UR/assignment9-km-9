@@ -10,12 +10,18 @@ class ControlWindow(QtWidgets.QWidget):
         super(ControlWindow, self).__init__()
         self.setGeometry(700, 100, 800, 500)
         self.initUIComponents()
+        self.gestures = {}
 
     def initUIComponents(self):
         self.label1 = QtWidgets.QLabel(self)
         self.label1.setText("Switch between record and recognition mode by pushing the buttons")
         self.label1.setMinimumSize(900, 100)
         self.label1.move(175,0)
+        self.recognized_gesture = QtWidgets.QLabel(self)
+        self.recognized_gesture.setText("Recognized Gesture: ")
+        self.recognized_gesture.setMinimumSize(500, 100)
+        self.recognized_gesture.move(300, 120)
+
 
 
         self.record_button = QtWidgets.QPushButton(self)
@@ -54,13 +60,16 @@ class ControlWindow(QtWidgets.QWidget):
         self.gesture_box.move(400,240)
         
     def add_gesture_to_box(self):
-        my_gestures = []
-        my_gestures.append(self.gesture_name_line.text())
-        self.gesture_box.addItems(my_gestures)
+        self.gestures[self.gesture_name_line.text()] = []
+        self.gesture_box.addItems(self.gestures.keys())
         self.gesture_name_line.setText("")
         
     def record_button_clicked(self):
-            print("record active!")
+        self.gesture_add_button.setEnabled(False)
+        self.gesture_box.setEnabled(False)
+        self.label1.setText("Recognized Gesture: ")
+        print("record active!")
+
 
     def recognize_button_clicked(self):
             print("recognition active!")
