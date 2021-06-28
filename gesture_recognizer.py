@@ -79,6 +79,7 @@ class GestureWindow(QMainWindow):
     def __init__(self):
         super(GestureWindow, self).__init__()
         self.setGeometry(700, 100, 800, 500)
+        self.setMinimumSize(800,800)
         self.initUI()
 
     def initUI(self):
