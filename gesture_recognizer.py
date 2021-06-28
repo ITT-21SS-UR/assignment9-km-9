@@ -75,9 +75,9 @@ class ControlWindow(QtWidgets.QWidget):
             print("recognition active!")
 
 
-class GestureWindow(QMainWindow):
+class MainWindow(QMainWindow):
     def __init__(self):
-        super(GestureWindow, self).__init__()
+        super(MainWindow, self).__init__()
         self.setGeometry(700, 100, 800, 500)
         self.setMinimumSize(800,800)
         self.initUI()
@@ -95,7 +95,7 @@ class GestureWindow(QMainWindow):
 
 def main():
     app = QApplication(sys.argv)
-    win = GestureWindow()
+    win = MainWindow()
     win.show()
     sys.exit(app.exec())
 
