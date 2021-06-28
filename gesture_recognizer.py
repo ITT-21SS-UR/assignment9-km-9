@@ -1,21 +1,17 @@
 import sys
-from PyQt5 import QtWidgets
 from PyQt5.QtWidgets import QApplication, QMainWindow
-from PyQt5 import  QtCore
-from PyQt5 import QtGui
+from pyqtgraph.Qt import QtCore, QtGui, QtWidgets
 from PyQt5.QtGui import QColor, QPainter, QPen
 
 from QDrawWidget import QDrawWidget
 
-class GestureWindow(QMainWindow):
+class ControlWindow(QtWidgets.QWidget):
     def __init__(self):
-        super(GestureWindow, self).__init__()
+        super(ControlWindow, self).__init__()
         self.setGeometry(700, 100, 800, 500)
         self.initUIComponents()
 
     def initUIComponents(self):
-        self.drawing_area = QDrawWidget()
-
         self.label1 = QtWidgets.QLabel(self)
         self.label1.setText("Switch between record and recognition mode by pushing the buttons")
         self.label1.setMinimumSize(900, 100)
@@ -46,13 +42,28 @@ class GestureWindow(QMainWindow):
         gesture_save_button.setMinimumSize(50,20)
         gesture_save_button.move(610,200)
 
-
     def record_button_clicked(self):
-        print("record active!")
-
+            print("record active!")
 
     def recognize_button_clicked(self):
-        print("recognition active!")
+            print("recognition active!")
+
+
+class GestureWindow(QMainWindow):
+    def __init__(self):
+        super(GestureWindow, self).__init__()
+        self.setGeometry(700, 100, 800, 500)
+        self.initUI()
+
+    def initUI(self):
+        self.drawing_area = QDrawWidget()
+        self.ctrl_window = ControlWindow()
+        layout = QtGui.QGridLayout()
+        layout.addWidget(self.drawing_area, 1, 0)
+        layout.addWidget( self.ctrl_window, 0, 0)
+        cw = QtGui.QWidget()
+        cw.setLayout(layout)
+        self.setCentralWidget(cw)
 
 
 def main():
