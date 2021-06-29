@@ -3,6 +3,7 @@ from PyQt5.QtWidgets import QApplication, QMainWindow
 from pyqtgraph.Qt import QtCore, QtGui, QtWidgets
 from PyQt5.QtGui import QColor, QPainter, QPen
 import math
+import numpy as np
 from QDrawWidget import QDrawWidget
 
 
@@ -69,15 +70,11 @@ class ControlWindow(QtWidgets.QWidget):
         self.gesture_add_button.setEnabled(False)
         self.gesture_box.setEnabled(False)
         self.label1.setText("Recognized Gesture: ")
-        print("record active!")
+   #     print("record active!")
 
 
     def recognize_button_clicked(self):
-            print("recognition active!")
-
-
-
-
+        pass
 
 
 class MainWindow(QMainWindow):
@@ -98,13 +95,17 @@ class MainWindow(QMainWindow):
         cw.setLayout(layout)
         self.setCentralWidget(cw)
 
+
     @QtCore.pyqtSlot()
     def dollar_one(self):
-        points = self.drawing_area.points
-        new_points = self.scale(self.rotate(self.resample_points(points)))
+        new_points = self.resample_points(self.drawing_area.points)
+        new_points = self.rotate(new_points)
+        new_points = self.scale(new_points)
+        new_points = self.recognize(new_points)
+
+        #new_points = self.scale((self.rotate(self.resample_points(points))))
 
     def resample_points(self, points):
-        print(points)
         n = 32
         stroke_length = 0
         i = 1
@@ -120,7 +121,7 @@ class MainWindow(QMainWindow):
                 i += 1
 
             l = stroke_length / (n - 1)
-            print(l)
+         #   print(l)
             distance_sum = 0
             i = 1
 
@@ -136,18 +137,73 @@ class MainWindow(QMainWindow):
                     points[i] = point
                     distance_sum = 0
                 i += 1
-            print(new_points)
+           # print(new_points)
             return new_points
 
-    def rotate(self,points):
-        #insert step 2
+    def rotate(self, points):
         new_points = []
+        new_points = self.rotate_to_zero(points)
+        new_points = self.rotate_by(points, self.indicative_angle(points))
         return new_points
 
-    def scale(self,points):
-        # insert step 3
-        new_points = []
+    def indicative_angle(self,points):
+        x_coordinates = [p[0] for p in points]
+        y_coordinates = [p[1] for p in points]
+        centroid = (np.mean(x_coordinates), np.mean(y_coordinates))
+        indicative_angle = np.arctan2(centroid[1]-points[0][1], centroid[0]-points[0][0])
+        return indicative_angle
+
+    def rotate_to_zero(self, points):
+        new_points = self.rotate_by(points, -self.indicative_angle(points))
         return new_points
+
+    def rotate_by(self, points, angle):
+        new_points = []
+        x_coordinates = [p[0] for p in points]
+        y_coordinates = [p[1] for p in points]
+        centroid = (np.mean(x_coordinates), np.mean(y_coordinates))
+        for p in points:
+            qx = (p[0]-centroid[0]) * np.cos(angle) - (p[1]-centroid[1]) * np.sin(angle) + centroid[0]
+            qy = (p[0]-centroid[0]) * np.sin(angle) + (p[1]-centroid[1]) * np.cos(angle) + centroid[1]
+            new_points.append((qx,qy))
+        return new_points
+
+    def scale(self, points):
+        new_points = self.scale_to_square(points,500)
+        new_points = self.translate_to_origin(points)
+        return new_points
+
+    def scale_to_square(self, points, size):
+        new_points = []
+        x_coordinates = [p[0] for p in points]
+        y_coordinates = [p[1] for p in points]
+        min_x, min_y = np.min(x_coordinates), np.min(y_coordinates)
+        max_x, max_y = np.max(x_coordinates), np.max(y_coordinates)
+
+        box_width = max_x - min_x
+        box_height = max_y - min_y
+
+        for p in points:
+            qx = p[0] * (size / box_width)
+            qy = p[1] * (size / box_height)
+            new_points.append((qx, qy))
+        return new_points
+
+    def translate_to_origin(self,points):
+        new_points = []
+        x_coordinates = [p[0] for p in points]
+        y_coordinates = [p[1] for p in points]
+        centroid = (np.mean(x_coordinates), np.mean(y_coordinates))
+
+        for p in points:
+            qx = p[0] - centroid[0]
+            qy = p[1] - centroid[1]
+            new_points.append((qx,qy))
+        return
+
+    def recognize(self,points,templates):
+        # to do step 4
+        pass
 
 def main():
     app = QApplication(sys.argv)
