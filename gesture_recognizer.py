@@ -77,10 +77,14 @@ class ControlWindow(QtWidgets.QWidget):
             sys.stderr.write("The gesture name either already exists or is empty. Please choose another name")
 
     def record_button_clicked(self):
-        self.gesture_add_button.setEnabled(False)
-        self.gesture_box.setEnabled(False)
-        self.label1.setText("Recording Gesture")
-        self.is_recognizing = False
+        self.gesture_add_button.setEnabled(not self.gesture_add_button.isEnabled())
+        self.gesture_box.setEnabled(not self.gesture_box.isEnabled())
+        if self.is_recognizing:
+            self.recognized_gesture.setText("Recording Gesture")
+        else:
+            self.recognized_gesture.setText("Recogized Gesture: ")
+        self.is_recognizing = not self.is_recognizing
+        print(self.is_recognizing)
 
     def recognize_button_clicked(self):
         self.gesture_add_button.setEnabled(True)
@@ -232,6 +236,8 @@ class MainWindow(QMainWindow):
         template_angle = 45  # grad
         template_thresold = 2
         for template in gestures:
+            if gestures[template] == []:
+                continue
             d = self.distance_at_best_angle(points, gestures[template], template_angle, -template_angle, template_thresold)
             if d < b:
                 b = d
