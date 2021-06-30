@@ -6,11 +6,12 @@ class Dollar_One_Model():
     def __init__(self):
         self.bounding_box_size = 500
 
-    # Self-written method which is later used twice within our $1 algorithm
+    # method used for calculating distance between two 2D points
     def calc_distance(self, p1, p2):
         distance = math.sqrt((p1[0] - p2[0]) ** 2 + (p1[1] - p2[1]) ** 2)
         return distance
 
+    # step 1 resample the given points to n evenly spaced points
     def resample_points(self, points, n):
         stroke_length = 0
         i = 1
@@ -48,8 +49,7 @@ class Dollar_One_Model():
                 (points[len(points) - 1][0], points[len(points) - 1][1]))
         return new_points
 
-        # step 2 - decomposed into two methods as suggested in the pseudo-code
-
+    # step 2 - decomposed into two methods as suggested in the pseudo-code
     def rotate(self, points):
         new_points = self.rotate_to_zero(points)
         new_points = self.rotate_by(
@@ -79,8 +79,7 @@ class Dollar_One_Model():
             new_points.append((qx, qy))
         return new_points
 
-        # step 3 - the initial size of the bounding box is set with 500
-
+    # step 3 - the initial size of the bounding box is set with 500
     def scale(self, points):
         new_points = self.scale_to_square(points, self.bounding_box_size)
         new_points = self.translate_to_origin(new_points)
@@ -114,11 +113,10 @@ class Dollar_One_Model():
             new_points.append((qx, qy))
         return new_points
 
-        # step 4 - we integrated some error handling
-        # for the case that the gesture has not been recorded yet
-        # an angle of 45 degrees and a thresold of 2 degrees is
-        # suggested in the paper
-
+    # step 4 - we integrated some error handling
+    # for the case that the gesture has not been recorded yet
+    # an angle of 45 degrees and a thresold of 2 degrees is
+    # suggested in the paper
     def recognize(self, points, gestures):
         b = np.inf
         template_angle = 45  # degrees
@@ -139,8 +137,7 @@ class Dollar_One_Model():
         print("score: ", score)
         return updated_template  # , score
 
-        # The golden ratio calculates an angle
-
+    # The golden ratio calculates an angle
     def distance_at_best_angle(self, points, template, angle_a, angle_b, angle_threshold):
         golden_ratio = 0.5 * (-1 + np.sqrt(5))
         x1 = golden_ratio * angle_a + (1 - golden_ratio) * angle_b
