@@ -38,15 +38,8 @@ class ControlWindow(QtWidgets.QWidget):
         self.record_button.setText("Record")
         self.record_button.setMinimumSize(150, 50)
         self.record_button.setStyleSheet("background-color :  blue")
-        self.record_button.move(200, 100)
+        self.record_button.move(300, 100)
         self.record_button.clicked.connect(self.record_button_clicked)
-
-        self.recognize_button = QtWidgets.QPushButton(self)
-        self.recognize_button.setText("Recognize")
-        self.recognize_button.setMinimumSize(150, 50)
-        self.recognize_button.setStyleSheet("background-color : yellow")
-        self.recognize_button.move(400, 100)
-        self.recognize_button.clicked.connect(self.recognize_button_clicked)
 
         self.gesture_name_line = QtWidgets.QLineEdit(self)
         self.gesture_name_line.setText("")
@@ -81,16 +74,13 @@ class ControlWindow(QtWidgets.QWidget):
         self.gesture_box.setEnabled(not self.gesture_box.isEnabled())
         if self.is_recognizing:
             self.recognized_gesture.setText("Recording Gesture")
+            self.record_button.setText("Stop Recording")
         else:
             self.recognized_gesture.setText("Recogized Gesture: ")
+            self.record_button.setText("Record")
         self.is_recognizing = not self.is_recognizing
         print(self.is_recognizing)
 
-    def recognize_button_clicked(self):
-        self.gesture_add_button.setEnabled(True)
-        self.gesture_box.setEnabled(True)
-        self.label1.setText("Recognized Gesture: ")
-        self.is_recognizing = True
 
 
 class MainWindow(QMainWindow):
