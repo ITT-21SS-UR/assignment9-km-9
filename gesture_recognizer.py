@@ -79,9 +79,8 @@ class ControlWindow(QtWidgets.QWidget):
     def record_button_clicked(self):
         self.gesture_add_button.setEnabled(False)
         self.gesture_box.setEnabled(False)
-        self.label1.setText("Recognized Gesture: ")
+        self.label1.setText("Recording Gesture")
         self.is_recognizing = False
-    #     print("record active!")
 
     def recognize_button_clicked(self):
         self.gesture_add_button.setEnabled(True)
@@ -122,8 +121,6 @@ class MainWindow(QMainWindow):
         new_points = self.resample_points(self.drawing_area.points, n)
         new_points = self.rotate(new_points)
         new_points = self.scale(new_points)
-        print(new_points)
-        # new_points = self.recognize(new_points)
         if self.ctrl_window.is_recognizing:
             print("recognize")
             self.ctrl_window.recognized_gesture.setText("recognized Gesture:" + self.recognize(
@@ -131,10 +128,8 @@ class MainWindow(QMainWindow):
         else:
             print("record")
             self.ctrl_window.gestures[self.ctrl_window.gesture_box.currentText()] = new_points
-            print("len points", len(new_points))
 
-        # new_points = self.scale((self.rotate(self.resample_points(points))))
-
+    # rsamples gicen points to n equally spaced points
     def resample_points(self, points, n):
         stroke_length = 0
         i = 1
@@ -148,7 +143,6 @@ class MainWindow(QMainWindow):
             i += 1
 
         l = stroke_length / (n - 1)
-        print("l", l)
         distance_sum = 0.0
         i = 1
         # resample points to n evenly spaced points
@@ -166,10 +160,10 @@ class MainWindow(QMainWindow):
             else:
                 distance_sum += distance
             i += 1
-        if len(new_points) == n - 1: #sometimes we fall a rounding-error short of adding the last point, so add it if so
-            print("not enough points")
+        # taken from: http://depts.washington.edu/acelab/proj/dollar/dollar.js
+        if len(new_points) == n - 1:
+            # sometimes we fall a rounding-error short of adding the last point, so add it if so
             new_points.append((points[len(points) - 1][0], points[len(points) - 1][1]))
-            # print(new_points)
         return new_points
 
     def rotate(self, points):
@@ -235,18 +229,16 @@ class MainWindow(QMainWindow):
 
     def recognize(self, points, gestures):
         b = np.inf
-        print("B", b)
         template_angle = 45  # grad
         template_thresold = 2
         for template in gestures:
             d = self.distance_at_best_angle(points, gestures[template], template_angle, -template_angle, template_thresold)
-            print("d",d)
             if d < b:
                 b = d
                 updated_template = template
         score = 1 - (b / 0.5 * np.sqrt(self.bounding_box_size ** 2 + self.bounding_box_size ** 2))
-        print("updated_template", updated_template)
-        print("score", score)
+        print("template: ", updated_template)
+        print("score: ", score)
         return updated_template #, score
 
     def distance_at_best_angle(self, points, template, angle_a, angle_b, angle_threshold):
@@ -277,8 +269,6 @@ class MainWindow(QMainWindow):
         return d
 
     def path_distance(self, a, b):
-        print("a", a)
-        print("b", b)
         d = 0
         for i in range(len(a)):
             d = d + self.calc_distance(a[i], b[i])
