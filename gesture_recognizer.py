@@ -227,10 +227,12 @@ class MainWindow(QMainWindow):
 
     def recognize(self, points, gestures):
         b = np.inf
+        print("B", b)
         template_angle = 45  # grad
         template_thresold = 2
         for template in gestures:
-            d = distance_at_best_angle(points, template, template_angle, -template_angle, template_thresold)
+            d = self.distance_at_best_angle(points, template, template_angle, -template_angle, template_thresold)
+            print("d",d)
             if d < b:
                 b = d
                 updated_template = template
@@ -240,9 +242,9 @@ class MainWindow(QMainWindow):
     def distance_at_best_angle(self, points, gestures, angle_a, angle_b, angle_threshold):
         golden_ratio = 0.5 * (-1 + np.sqrt(5))
         x1 = golden_ratio * angle_a + (1 - golden_ratio) * angle_b
-        f1 = distance_at_angle(points, gestures, x1)
+        f1 = self.distance_at_angle(points, gestures, x1)
         x2 = (1 - golden_ratio) * angle_a + golden_ratio * angle_b
-        f2 = distance_at_angle(points, gestures, x2)
+        f2 = self.distance_at_angle(points, gestures, x2)
 
         while np.abs(angle_b - angle_a) > angle_threshold:
             if f1 < f2:
@@ -260,7 +262,7 @@ class MainWindow(QMainWindow):
         return np.min(f1,f2)
 
     def distance_at_angle(self, points, gestures, angle):
-            new_points = self.rotateBy(points, angle)
+            new_points = self.rotate_by(points, angle)
             d = self.path_distance(new_points, gestures)
             return d
 
