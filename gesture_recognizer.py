@@ -1,3 +1,11 @@
+'''
+Code created by both Teammembers in equal distribution
+
+Overall Structure of code for dollar one recognizer taken from
+"Gestures without Libraries, Toolkits or Training: A $1 Recognizer for User Interface Prototypes"
+
+'''
+
 import sys
 from PyQt5.QtWidgets import QApplication, QMainWindow
 from pyqtgraph.Qt import QtCore, QtGui, QtWidgets
@@ -118,51 +126,51 @@ class MainWindow(QMainWindow):
         # new_points = self.recognize(new_points)
         if self.ctrl_window.is_recognizing:
             print("recognize")
-            self.ctrl_window.recognized_gesture.setText(self.recognize(new_points, self.ctrl_window.gestures))
+            self.ctrl_window.recognized_gesture.setText("recognized Gesture:" + self.recognize(
+                new_points, self.ctrl_window.gestures))
         else:
             print("record")
             self.ctrl_window.gestures[self.ctrl_window.gesture_box.currentText()] = new_points
+            print("len points", len(new_points))
 
         # new_points = self.scale((self.rotate(self.resample_points(points))))
 
     def resample_points(self, points, n):
         stroke_length = 0
         i = 1
-        new_points = []
-        if len(points) < 32:
+        new_points = [points[0]]
+        # calculate length of stroke
+        while i < len(points):
+            p1 = points[i-1]
+            p2 = points[i]
+            distance = self.calc_distance(p1, p2)
+            stroke_length += distance
+            i += 1
+
+        l = stroke_length / (n - 1)
+        print("l", l)
+        distance_sum = 0.0
+        i = 1
+        # resample points to n evenly spaced points
+        while i < len(points):
+            p1 = points[i - 1]
+            p2 = points[i]
+            distance = self.calc_distance(p1, p2)
+            if distance_sum + distance >= l:
+                x = p1[0] + ((l - distance_sum) / distance) * (p2[0] - p1[0])
+                y = p1[1] + ((l - distance_sum) / distance) * (p2[1] - p1[1])
+                point = (x, y)
+                new_points.append(point)
+                points.insert(i, point)
+                distance_sum = 0
+            else:
+                distance_sum += distance
+            i += 1
+        if len(new_points) == n - 1: #sometimes we fall a rounding-error short of adding the last point, so add it if so
             print("not enough points")
-
-        else:
-            # calculate length of stroke
-            while i < len(points):
-                p1 = points[i-1]
-                p2 = points[i]
-                distance = self.calc_distance(p1, p2)
-                stroke_length += distance
-                i += 1
-
-            l = stroke_length / (n - 1)
-            print("l", l)
-            distance_sum = 0.0
-            i = 1
-            # resample points to n evenly spaced points
-            while i < len(points):
-                p1 = points[i - 1]
-                p2 = points[i]
-                distance = self.calc_distance(p1, p2)
-                if distance_sum + distance >= l:
-                    x = p1[0] + ((l - distance_sum) / distance) * (p2[0] - p1[0])
-                    y = p1[1] + ((l - distance_sum) / distance) * (p2[1] - p1[1])
-                    point = (x, y)
-                    new_points.append(point)
-                    points.insert(i, point)
-                    distance_sum = 0
-                else:
-                    distance_sum += distance
-                i += 1
-
+            new_points.append((points[len(points) - 1][0], points[len(points) - 1][1]))
             # print(new_points)
-            return new_points
+        return new_points
 
     def rotate(self, points):
         new_points = self.rotate_to_zero(points)
@@ -237,7 +245,9 @@ class MainWindow(QMainWindow):
                 b = d
                 updated_template = template
         score = 1 - (b / 0.5 * np.sqrt(self.bounding_box_size ** 2 + self.bounding_box_size ** 2))
-        return updated_template, score
+        print("updated_template", updated_template)
+        print("score", score)
+        return updated_template #, score
 
     def distance_at_best_angle(self, points, template, angle_a, angle_b, angle_threshold):
         golden_ratio = 0.5 * (-1 + np.sqrt(5))
@@ -271,8 +281,6 @@ class MainWindow(QMainWindow):
         print("b", b)
         d = 0
         for i in range(len(a)):
-            print("a[i]", a[i])
-            print("b[i]", b[i])
             d = d + self.calc_distance(a[i], b[i])
         return d / len(a)
 
