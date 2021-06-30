@@ -44,13 +44,12 @@ class ControlWindow(QtWidgets.QWidget):
         self.gesture_name_line.setText("")
         self.gesture_name_line.setMinimumSize(400,20)
         self.gesture_name_line.move(200,200)
-        
-        
+
         self.gesture_add_button = QtWidgets.QPushButton(self)
         self.gesture_add_button.setText("add")
-        self.gesture_add_button.setMinimumSize(50,20)
-        self.gesture_add_button.move(610,200)
-        self.gesture_add_button.clicked.connect(self.add_gesture_to_box)
+        self.gesture_add_button.setMinimumSize(50, 20)
+        self.gesture_add_button.move(610, 200)
+        self.gesture_add_button.clicked.connect(lambda: self.add_gesture(self.gesture_name_line.text().strip()))
 
         self.label3 = QtWidgets.QLabel(self)
         self.label3.setText("Add to existing gesture type: ")
@@ -60,11 +59,16 @@ class ControlWindow(QtWidgets.QWidget):
         self.gesture_box = QtWidgets.QComboBox(self)
         self.gesture_box.setMinimumSize(150,20)
         self.gesture_box.move(400,240)
-        
-    def add_gesture_to_box(self):
-        self.gestures[self.gesture_name_line.text()] = []
-        self.gesture_box.addItems(self.gestures.keys())
-        self.gesture_name_line.setText("")
+
+
+
+    def add_gesture(self, name):
+        if name not in self.gestures and name != "":
+            self.gestures[name] = []
+            self.gesture_box.clear()
+            self.gesture_box.addItems(self.gestures.keys())
+        else:
+            sys.stderr.write("The gesture name either already exists or is empty. Please choose another name")
         
     def record_button_clicked(self):
         self.gesture_add_button.setEnabled(False)
