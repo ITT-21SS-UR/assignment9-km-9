@@ -101,7 +101,8 @@ class MainWindow(QMainWindow):
         new_points = self.resample_points(self.drawing_area.points)
         new_points = self.rotate(new_points)
         new_points = self.scale(new_points)
-        new_points = self.recognize(new_points)
+        print(new_points)
+        #new_points = self.recognize(new_points)
 
         #new_points = self.scale((self.rotate(self.resample_points(points))))
 
@@ -112,8 +113,9 @@ class MainWindow(QMainWindow):
         new_points = []
         if len(points) < 32:
             print("not enough points")
-        # calculate length of stroke
+
         else:
+            # calculate length of stroke
             while i < len(points):
                 # a²+b² = c²
                 distance = math.sqrt((points[i][0] - points[i - 1][0]) ** 2 + (points[i][1] - points[i - 1][1]) ** 2)
@@ -121,29 +123,31 @@ class MainWindow(QMainWindow):
                 i += 1
 
             l = stroke_length / (n - 1)
-         #   print(l)
-            distance_sum = 0
+            print("l", l)
+            distance_sum = 0.0
             i = 1
-
             # resample points to n evenly spaced points
             while i < len(points):
+                p1 = points[i - 1]
+                p2 = points[i]
                 distance = math.sqrt((points[i][0] - points[i - 1][0]) ** 2 + (points[i][1] - points[i - 1][1]) ** 2)
-                distance_sum += distance
-                if distance_sum >= l:
-                    x = points[i - 1][0] + ((l - distance_sum) / distance) * (points[i - 1][0] - points[i - 1][0])
-                    y = points[i - 1][1] + ((l - distance_sum) / distance) * (points[i - 1][1] - points[i - 1][1])
+                if distance_sum + distance >= l:
+                    x = p1[0] + ((l - distance_sum) / distance) * (p2[0] - p1[0])
+                    y = p1[1] + ((l - distance_sum) / distance) * (p2[1] - p1[1])
                     point = (x, y)
                     new_points.append(point)
-                    points[i] = point
+                    points.insert(i, point)
                     distance_sum = 0
+                else:
+                    distance_sum += distance
                 i += 1
+
            # print(new_points)
             return new_points
 
     def rotate(self, points):
-        new_points = []
         new_points = self.rotate_to_zero(points)
-        new_points = self.rotate_by(points, self.indicative_angle(points))
+        new_points = self.rotate_by(new_points, self.indicative_angle(new_points))
         return new_points
 
     def indicative_angle(self,points):
@@ -169,8 +173,8 @@ class MainWindow(QMainWindow):
         return new_points
 
     def scale(self, points):
-        new_points = self.scale_to_square(points,500)
-        new_points = self.translate_to_origin(points)
+        new_points = self.scale_to_square(points, 500)
+        new_points = self.translate_to_origin(new_points)
         return new_points
 
     def scale_to_square(self, points, size):
@@ -199,7 +203,7 @@ class MainWindow(QMainWindow):
             qx = p[0] - centroid[0]
             qy = p[1] - centroid[1]
             new_points.append((qx,qy))
-        return
+        return new_points
 
     def recognize(self,points,templates):
         # to do step 4
