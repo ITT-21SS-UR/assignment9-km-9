@@ -121,7 +121,7 @@ class MainWindow(QMainWindow):
             self.ctrl_window.recognized_gesture.setText(self.recognize(new_points, self.ctrl_window.gestures))
         else:
             print("record")
-            self.ctrl_window.gestures[self.ctrl_window.gesture_box.currentText()].append(new_points)
+            self.ctrl_window.gestures[self.ctrl_window.gesture_box.currentText()] = new_points
 
         # new_points = self.scale((self.rotate(self.resample_points(points))))
 
@@ -231,7 +231,7 @@ class MainWindow(QMainWindow):
         template_angle = 45  # grad
         template_thresold = 2
         for template in gestures:
-            d = self.distance_at_best_angle(points, template, template_angle, -template_angle, template_thresold)
+            d = self.distance_at_best_angle(points, gestures[template], template_angle, -template_angle, template_thresold)
             print("d",d)
             if d < b:
                 b = d
@@ -239,12 +239,12 @@ class MainWindow(QMainWindow):
         score = 1 - (b / 0.5 * np.sqrt(self.bounding_box_size ** 2 + self.bounding_box_size ** 2))
         return updated_template, score
 
-    def distance_at_best_angle(self, points, gestures, angle_a, angle_b, angle_threshold):
+    def distance_at_best_angle(self, points, template, angle_a, angle_b, angle_threshold):
         golden_ratio = 0.5 * (-1 + np.sqrt(5))
         x1 = golden_ratio * angle_a + (1 - golden_ratio) * angle_b
-        f1 = self.distance_at_angle(points, gestures, x1)
+        f1 = self.distance_at_angle(points, template, x1)
         x2 = (1 - golden_ratio) * angle_a + golden_ratio * angle_b
-        f2 = self.distance_at_angle(points, gestures, x2)
+        f2 = self.distance_at_angle(points, template, x2)
 
         while np.abs(angle_b - angle_a) > angle_threshold:
             if f1 < f2:
@@ -252,25 +252,29 @@ class MainWindow(QMainWindow):
                 x2 = x1
                 f2 = f1
                 x1 = golden_ratio * angle_a + (1 - golden_ratio) * angle_b
-                f1 = self.distance_at_angle(points, gestures, x1)
+                f1 = self.distance_at_angle(points, template, x1)
             else:
                 angle_a = x1
                 x1 = x2
                 f1 = f2
                 x2 = (1 - golden_ratio) * angle_a + golden_ratio * angle_b
-                f2 = self.distance_at_angle(points, gestures, x2)
-        return np.min(f1,f2)
+                f2 = self.distance_at_angle(points, template, x2)
+        return min(f1,f2)
 
-    def distance_at_angle(self, points, gestures, angle):
-            new_points = self.rotate_by(points, angle)
-            d = self.path_distance(new_points, gestures)
-            return d
+    def distance_at_angle(self, points, template, angle):
+        new_points = self.rotate_by(points, angle)
+        d = self.path_distance(new_points, template)
+        return d
 
     def path_distance(self, a, b):
-            d = 0
-            for i in range(len(a)):
-                d = d + self.calc_distance(a[i], b[i])
-            return d / len(a)
+        print("a", a)
+        print("b", b)
+        d = 0
+        for i in range(len(a)):
+            print("a[i]", a[i])
+            print("b[i]", b[i])
+            d = d + self.calc_distance(a[i], b[i])
+        return d / len(a)
 
 
 def main():
