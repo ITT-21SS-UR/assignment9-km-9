@@ -37,7 +37,7 @@ class ControlWindow(QtWidgets.QWidget):
         self.record_button = QtWidgets.QPushButton(self)
         self.record_button.setText("Record")
         self.record_button.setMinimumSize(150, 50)
-        self.record_button.setStyleSheet("background-color :  blue")
+        self.record_button.setStyleSheet("background-color :  green")
         self.record_button.move(300, 100)
         self.record_button.clicked.connect(self.record_button_clicked)
 
@@ -75,9 +75,11 @@ class ControlWindow(QtWidgets.QWidget):
         if self.is_recognizing:
             self.recognized_gesture.setText("Recording Gesture")
             self.record_button.setText("Stop Recording")
+            self.record_button.setStyleSheet("background-color :  red")
         else:
             self.recognized_gesture.setText("Recogized Gesture: ")
             self.record_button.setText("Record")
+            self.record_button.setStyleSheet("background-color :  green")
         self.is_recognizing = not self.is_recognizing
         print(self.is_recognizing)
 
@@ -225,6 +227,8 @@ class MainWindow(QMainWindow):
         b = np.inf
         template_angle = 45  # grad
         template_thresold = 2
+        # if no gestures have been recorded:
+        updated_template = " no recorded gestures"
         for template in gestures:
             if gestures[template] == []:
                 continue
