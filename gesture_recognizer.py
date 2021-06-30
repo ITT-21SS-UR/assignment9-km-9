@@ -3,7 +3,7 @@ Code created by both team members in equal distribution
 Overall Structure of code for dollar one recognizer taken from
 "Gestures without Libraries, Toolkits or Training: A $1 Recognizer
 for User Interface Prototypes"
-The three tested gestures were: line, triangle, looping
+The tested gestures were: line, triangle, circle, square
 """
 
 import sys
