@@ -66,6 +66,7 @@ class ControlWindow(QtWidgets.QWidget):
             self.gestures[name] = []
             self.gesture_box.clear()
             self.gesture_box.addItems(self.gestures.keys())
+            self.gesture_box.setCurrentText(name)
         else:
             sys.stderr.write("The gesture name either already exists or is empty. Please choose another name")
 
