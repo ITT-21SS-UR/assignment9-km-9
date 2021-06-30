@@ -1,7 +1,8 @@
 '''
 Code created by both team members in equal distribution
 Overall Structure of code for dollar one recognizer taken from
-"Gestures without Libraries, Toolkits or Training: A $1 Recognizer for User Interface Prototypes"
+"Gestures without Libraries, Toolkits or Training: A $1 Recognizer
+for User Interface Prototypes"
 '''
 import sys
 import math
@@ -22,7 +23,7 @@ class ControlWindow(QtWidgets.QWidget):
 
     def initUIComponents(self):
         self.label1 = QtWidgets.QLabel(self)
-        self.label1.setText("Switch between record and recognition mode by pushing the buttons")
+        self.label1.setText("Switch between modes by pushing the buttons")
         self.label1.setMinimumSize(900, 100)
         self.label1.move(175, 0)
 
@@ -47,7 +48,8 @@ class ControlWindow(QtWidgets.QWidget):
         self.gesture_add_button.setText("add")
         self.gesture_add_button.setMinimumSize(50, 20)
         self.gesture_add_button.move(610, 200)
-        self.gesture_add_button.clicked.connect(lambda: self.add_gesture(self.gesture_name_line.text().strip()))
+        self.gesture_add_button.clicked.connect
+        (lambda: self.add_gesture(self.gesture_name_line.text().strip()))
 
         self.label3 = QtWidgets.QLabel(self)
         self.label3.setText("Add to existing gesture type: ")
@@ -58,7 +60,8 @@ class ControlWindow(QtWidgets.QWidget):
         self.gesture_box.setMinimumSize(150, 20)
         self.gesture_box.move(400, 240)
 
-    # We create a dictionary of gestures with keys as the users entered name and values for our list of points
+    # We create a dictionary of gestures
+    # keys as the users entered name and values for our list of points
     def add_gesture(self, name):
         if name not in self.gestures and name != "":
             self.gestures[name] = []
@@ -66,11 +69,14 @@ class ControlWindow(QtWidgets.QWidget):
             self.gesture_box.addItems(self.gestures.keys())
             self.gesture_box.setCurrentText(name)
         else:
-            sys.stderr.write("The gesture name either already exists or is empty. Please choose another name")
+            sys.stderr.write
+            ("A gesture name already exists or is empty. Choose another name")
 
-    # We switch between recording and recognizing when the user pushes one button or another
+    # We switch between recording and recognizing
+    # Switch when the user pushes one button or another
     def record_button_clicked(self):
-        self.gesture_add_button.setEnabled(not self.gesture_add_button.isEnabled())
+        self.gesture_add_button.setEnabled
+        (not self.gesture_add_button.isEnabled())
         self.gesture_box.setEnabled(not self.gesture_box.isEnabled())
         if self.is_recognizing:
             self.recognized_gesture.setText("Recording Gesture")
@@ -84,7 +90,7 @@ class ControlWindow(QtWidgets.QWidget):
         print(self.is_recognizing)
 
 
-# We create a canvas with a QDrawWidget in a QMainWindow to separate our UI clearly
+# We create a canvas with a QDrawWidget in a QMainWindow to separate our UI
 class MainWindow(QMainWindow):
     def __init__(self):
         super(MainWindow, self).__init__()
@@ -111,25 +117,29 @@ class MainWindow(QMainWindow):
 
     # This is the primary function that handles the entire algorithm
     # step 1 - resample , step 2 - rotate , step 3 - scale , step 4 - recognize
-    # We take our drawn points on the canvas once and then process it by passing it to new_points again and again
+    # We take our drawn points on the canvas once
+    # process it by passing it to new_points again and again
     @QtCore.pyqtSlot()
     def dollar_one(self):
         n = 32
         if n > len(self.drawing_area.points):
-            self.ctrl_window.recognized_gesture.setText("Not enough points: either draw slower or a larger shape!")
+            self.ctrl_window.recognized_gesture.setText
+            ("Not enough points: either draw slower or a larger shape!")
             return
         new_points = self.resample_points(self.drawing_area.points, n)
         new_points = self.rotate(new_points)
         new_points = self.scale(new_points)
         if self.ctrl_window.is_recognizing:
             print("recognize")
-            self.ctrl_window.recognized_gesture.setText("recognized Gesture:" + self.recognize(
+            self.ctrl_window.recognized_gesture.setText
+            ("recognized Gesture:" + self.recognize(
                 new_points, self.ctrl_window.gestures))
         else:
             print("record")
-            self.ctrl_window.gestures[self.ctrl_window.gesture_box.currentText()] = new_points
+            self.ctrl_window.gestures
+            [self.ctrl_window.gesture_box.currentText()] = new_points
 
-    # step 1 - as discussed in the paper we take n=32 for 32 equally spaced points
+    # step 1 - as discussed in the paper we take n=32 for equally spaced points
     def resample_points(self, points, n):
         stroke_length = 0
         i = 1
@@ -161,14 +171,17 @@ class MainWindow(QMainWindow):
             i += 1
         # taken from: http://depts.washington.edu/acelab/proj/dollar/dollar.js
         if len(new_points) == n - 1:
-            # sometimes we fall a rounding-error short of adding the last point, so add it if so
-            new_points.append((points[len(points) - 1][0], points[len(points) - 1][1]))
+            # sometimes we fall a rounding-error short of adding the last point
+            # so add 1 it if so
+            new_points.append
+            ((points[len(points) - 1][0], points[len(points) - 1][1]))
         return new_points
 
     # step 2 - decomposed into two methods as suggested in the pseudo-code
     def rotate(self, points):
         new_points = self.rotate_to_zero(points)
-        new_points = self.rotate_by(new_points, self.indicative_angle(new_points))
+        new_points = self.rotate_by
+        (new_points, self.indicative_angle(new_points))
         return new_points
 
     def rotate_to_zero(self, points):
@@ -179,7 +192,8 @@ class MainWindow(QMainWindow):
         x_coordinates = [p[0] for p in points]
         y_coordinates = [p[1] for p in points]
         centroid = (np.mean(x_coordinates), np.mean(y_coordinates))
-        indicative_angle = np.arctan2(centroid[1] - points[0][1], centroid[0] - points[0][0])
+        indicative_angle = np.arctan2
+        (centroid[1] - points[0][1], centroid[0] - points[0][0])
         return indicative_angle
 
     def rotate_by(self, points, angle):
@@ -188,8 +202,10 @@ class MainWindow(QMainWindow):
         y_coordinates = [p[1] for p in points]
         centroid = (np.mean(x_coordinates), np.mean(y_coordinates))
         for p in points:
-            qx = (p[0] - centroid[0]) * np.cos(angle) - (p[1] - centroid[1]) * np.sin(angle) + centroid[0]
-            qy = (p[0] - centroid[0]) * np.sin(angle) + (p[1] - centroid[1]) * np.cos(angle) + centroid[1]
+            qx = (p[0] - centroid[0]) * np.cos(angle) -
+            (p[1] - centroid[1]) * np.sin(angle) + centroid[0]
+            qy = (p[0] - centroid[0]) * np.sin(angle) +
+            (p[1] - centroid[1]) * np.cos(angle) + centroid[1]
             new_points.append((qx, qy))
         return new_points
 
@@ -227,8 +243,10 @@ class MainWindow(QMainWindow):
             new_points.append((qx, qy))
         return new_points
 
-    # step 4 - we integrated some error handling if the gesture has not been recorded yet
-    # an angle of 45 degrees and a thresold of 2 degrees is suggested in the paper
+    # step 4 - we integrated some error handling
+    # for the case that the gesture has not been recorded yet
+    # an angle of 45 degrees and a thresold of 2 degrees is
+    # suggested in the paper
     def recognize(self, points, gestures):
         b = np.inf
         template_angle = 45  # degrees
@@ -238,18 +256,21 @@ class MainWindow(QMainWindow):
         for template in gestures:
             if gestures[template] == []:
                 continue
-            d = self.distance_at_best_angle(points, gestures[template], template_angle, -template_angle,
-                                            template_thresold)
+            d = self.distance_at_best_angle
+            (points, gestures[template]
+            , template_angle, -template_angle, template_thresold)
             if d < b:
                 b = d
                 updated_template = template
-        score = 1 - (b / 0.5 * np.sqrt(self.bounding_box_size ** 2 + self.bounding_box_size ** 2))
+        score = 1 - (b / 0.5 * np.sqrt(
+            self.bounding_box_size ** 2 + self.bounding_box_size ** 2))
         print("template: ", updated_template)
         print("score: ", score)
         return updated_template  # , score
 
     # The golden ratio calculates an angle
-    def distance_at_best_angle(self, points, template, angle_a, angle_b, angle_threshold):
+    def distance_at_best_angle
+    (self, points, template, angle_a, angle_b, angle_threshold):
         golden_ratio = 0.5 * (-1 + np.sqrt(5))
         x1 = golden_ratio * angle_a + (1 - golden_ratio) * angle_b
         f1 = self.distance_at_angle(points, template, x1)
