@@ -48,8 +48,8 @@ class ControlWindow(QtWidgets.QWidget):
         self.gesture_add_button.setText("add")
         self.gesture_add_button.setMinimumSize(50, 20)
         self.gesture_add_button.move(610, 200)
-        self.gesture_add_button.clicked.connect
-        (lambda: self.add_gesture(self.gesture_name_line.text().strip()))
+        self.gesture_add_button.clicked.connect(
+            lambda: self.add_gesture(self.gesture_name_line.text().strip()))
 
         self.label3 = QtWidgets.QLabel(self)
         self.label3.setText("Add to existing gesture type: ")
@@ -123,21 +123,19 @@ class MainWindow(QMainWindow):
     def dollar_one(self):
         n = 32
         if n > len(self.drawing_area.points):
-            self.ctrl_window.recognized_gesture.setText
-            ("Not enough points: either draw slower or a larger shape!")
+            self.ctrl_window.recognized_gesture.setText(
+                "Not enough points: either draw slower or a larger shape!")
             return
         new_points = self.resample_points(self.drawing_area.points, n)
         new_points = self.rotate(new_points)
         new_points = self.scale(new_points)
         if self.ctrl_window.is_recognizing:
             print("recognize")
-            self.ctrl_window.recognized_gesture.setText
-            ("recognized Gesture:" + self.recognize(
-                new_points, self.ctrl_window.gestures))
+            self.ctrl_window.recognized_gesture.setText(
+                "recognized Gesture:" + self.recognize(new_points, self.ctrl_window.gestures))
         else:
             print("record")
-            self.ctrl_window.gestures
-            [self.ctrl_window.gesture_box.currentText()] = new_points
+            self.ctrl_window.gestures[self.ctrl_window.gesture_box.currentText()] = new_points
 
     # step 1 - as discussed in the paper we take n=32 for equally spaced points
     def resample_points(self, points, n):
@@ -173,15 +171,15 @@ class MainWindow(QMainWindow):
         if len(new_points) == n - 1:
             # sometimes we fall a rounding-error short of adding the last point
             # so add 1 it if so
-            new_points.append
-            ((points[len(points) - 1][0], points[len(points) - 1][1]))
+            new_points.append(
+                (points[len(points) - 1][0], points[len(points) - 1][1]))
         return new_points
 
     # step 2 - decomposed into two methods as suggested in the pseudo-code
     def rotate(self, points):
         new_points = self.rotate_to_zero(points)
-        new_points = self.rotate_by
-        (new_points, self.indicative_angle(new_points))
+        new_points = self.rotate_by(
+            new_points, self.indicative_angle(new_points))
         return new_points
 
     def rotate_to_zero(self, points):
@@ -192,8 +190,8 @@ class MainWindow(QMainWindow):
         x_coordinates = [p[0] for p in points]
         y_coordinates = [p[1] for p in points]
         centroid = (np.mean(x_coordinates), np.mean(y_coordinates))
-        indicative_angle = np.arctan2
-        (centroid[1] - points[0][1], centroid[0] - points[0][0])
+        indicative_angle = np.arctan2(
+            centroid[1] - points[0][1], centroid[0] - points[0][0])
         return indicative_angle
 
     def rotate_by(self, points, angle):
@@ -202,10 +200,8 @@ class MainWindow(QMainWindow):
         y_coordinates = [p[1] for p in points]
         centroid = (np.mean(x_coordinates), np.mean(y_coordinates))
         for p in points:
-            qx = (p[0] - centroid[0]) * np.cos(angle) -
-            (p[1] - centroid[1]) * np.sin(angle) + centroid[0]
-            qy = (p[0] - centroid[0]) * np.sin(angle) +
-            (p[1] - centroid[1]) * np.cos(angle) + centroid[1]
+            qx = (p[0] - centroid[0]) * np.cos(angle) - (p[1] - centroid[1]) * np.sin(angle) + centroid[0]
+            qy = (p[0] - centroid[0]) * np.sin(angle) + (p[1] - centroid[1]) * np.cos(angle) + centroid[1]
             new_points.append((qx, qy))
         return new_points
 
@@ -256,9 +252,8 @@ class MainWindow(QMainWindow):
         for template in gestures:
             if gestures[template] == []:
                 continue
-            d = self.distance_at_best_angle
-            (points, gestures[template]
-            , template_angle, -template_angle, template_thresold)
+            d = self.distance_at_best_angle(
+                points, gestures[template], template_angle, -template_angle, template_thresold)
             if d < b:
                 b = d
                 updated_template = template
@@ -269,8 +264,7 @@ class MainWindow(QMainWindow):
         return updated_template  # , score
 
     # The golden ratio calculates an angle
-    def distance_at_best_angle
-    (self, points, template, angle_a, angle_b, angle_threshold):
+    def distance_at_best_angle(self, points, template, angle_a, angle_b, angle_threshold):
         golden_ratio = 0.5 * (-1 + np.sqrt(5))
         x1 = golden_ratio * angle_a + (1 - golden_ratio) * angle_b
         f1 = self.distance_at_angle(points, template, x1)
